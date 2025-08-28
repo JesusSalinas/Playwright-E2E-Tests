@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { TodoPage } from '../pages/TodoPage';
-import { TODO_ITEMS } from '../fixtures/test-data';
+import { TodoPage } from '../../pages/TodoPage';
+import { TODO_ITEMS } from '../../fixtures/test-data';
 
 let todoPage: TodoPage;
 
@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
   await todoPage.navigateTo('https://demo.playwright.dev/todomvc');
 });
 
-test.describe('New Todo',{ tag: '@smoke' }, () => {
+test.describe('New Todo', { tag: '@smoke' }, () => {
   test('should allow me to add todo items', async () => {
     await todoPage.addTodoItem(TODO_ITEMS[0]);
     await expect(await todoPage.getTodoLabel(0)).toHaveText(TODO_ITEMS[0]);

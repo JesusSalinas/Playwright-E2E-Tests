@@ -4,3 +4,4 @@ playwright-report/
 .vscode/**
 package-lock.json
 **/.DS_Store
+.env
