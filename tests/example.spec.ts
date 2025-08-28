@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect, Page } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');
@@ -373,7 +373,7 @@ test.describe('Routing', () => {
   });
 });
 
-async function createDefaultTodos(page) {
+async function createDefaultTodos(page: Page) {
   for (const item of TODO_ITEMS) {
     await page.locator('.new-todo').fill(item);
     await page.locator('.new-todo').press('Enter');
@@ -384,8 +384,8 @@ async function createDefaultTodos(page) {
  * @param {import('@playwright/test').Page} page
  * @param {number} expected
  */
- async function checkNumberOfTodosInLocalStorage(page, expected) {
-  return await page.waitForFunction(e => {
+ async function checkNumberOfTodosInLocalStorage(page: Page, expected: number) {
+  return await page.waitForFunction((e: any) => {
     return JSON.parse(localStorage['react-todos']).length === e;
   }, expected);
 }
@@ -394,9 +394,9 @@ async function createDefaultTodos(page) {
  * @param {import('@playwright/test').Page} page
  * @param {number} expected
  */
- async function checkNumberOfCompletedTodosInLocalStorage(page, expected) {
+ async function checkNumberOfCompletedTodosInLocalStorage(page: Page, expected: number) {
   return await page.waitForFunction(e => {
-    return JSON.parse(localStorage['react-todos']).filter(i => i.completed).length === e;
+    return JSON.parse(localStorage['react-todos']).filter((i: { completed: any; }) => i.completed).length === e;
   }, expected);
 }
 
@@ -404,8 +404,8 @@ async function createDefaultTodos(page) {
  * @param {import('@playwright/test').Page} page
  * @param {string} title
  */
-async function checkTodosInLocalStorage(page, title) {
-  return await page.waitForFunction(t => {
-    return JSON.parse(localStorage['react-todos']).map(i => i.title).includes(t);
+async function checkTodosInLocalStorage(page: Page, title: string) {
+  return await page.waitForFunction((t: any) => {
+    return JSON.parse(localStorage['react-todos']).map((i: { title: any; }) => i.title).includes(t);
   }, title);
 }
