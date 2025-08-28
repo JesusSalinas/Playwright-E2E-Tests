@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "chrome:tag": "playwright test --project=chromium --grep"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JesusSalinas/Playwright-E2E-Tests.git"
