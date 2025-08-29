@@ -1,107 +1,80 @@
-// @ts-check
-const { devices } = require('@playwright/test');
+import { defineConfig, devices } from '@playwright/test';
+import { DEFAULT_USER_AGENT } from './config';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-
-/**
- * @see https://playwright.dev/docs/test-configuration
- * @type {import('@playwright/test').PlaywrightTestConfig}
- */
-const config = {
+export default defineConfig({
+  // 📂 Directorio de pruebas
   testDir: './tests',
-  /* Maximum time one test can run for. */
-  timeout: 30 * 1000,
-  expect: {
-    /**
-     * Maximum time expect() should wait for the condition to be met.
-     * For example in `await expect(locator).toHaveText();`
-     */
-    timeout: 5000
-  },
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
+
+  // ⏱️ Timeout global por test
+  timeout: 5 * 60 * 1000,
+
+  // 🧵 Número de tests en paralelo (ajustar según CI/CD)
+  fullyParallel: true,
+
+  // ❌ Fallar si usamos test.only en CI
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  use: {
-    /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-    actionTimeout: 0,
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://localhost:3000',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+  // 🔁 Reintentos: 2 en CI, 0 local
+  retries: process.env.CI ? 2 : 0,
+
+  // 👷 Workers: 1 en CI, automático en local
+  workers: process.env.CI ? 1 : undefined,
+
+  // 📊 Reportes
+  reporter: [
+    ['list'], // consola amigable
+    ['html', { open: 'never' }], // reporte HTML
+    // ['allure-playwright'], // Allure (tendencia actual en QA)
+  ],
+
+  expect: {
+    timeout: 60 * 1000, // Timeout por defecto para expect()
   },
 
-  /* Configure projects for major browsers */
+  // ⚙️ Configuración por defecto para todos los tests
+  use: {
+    //baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    actionTimeout: 60 * 1000,
+    navigationTimeout: 60 * 1000,
+    userAgent: DEFAULT_USER_AGENT,
+    headless: !!process.env.CI,
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    trace: 'on-first-retry',
+    viewport: { width: 1280, height: 720 },
+  },
+
   projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
-
     {
       name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
+      use: { ...devices['Desktop Firefox'] },
     },
-
     {
       name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'API',
+      testMatch: /api\/(.*)\.spec\.ts/,
       use: {
-        ...devices['Desktop Safari'],
+        baseURL: 'https://jsonplaceholder.typicode.com',
+        extraHTTPHeaders: {
+          'Content-Type': 'application/json',
+        },
       },
     },
-
-    /* Test against mobile viewports. */
     // {
-    //   name: 'Mobile Chrome',
-    //   use: {
-    //     ...devices['Pixel 5'],
-    //   },
+    //   name: 'mobile-chrome',
+    //   use: { ...devices['Pixel 7'] },
     // },
     // {
-    //   name: 'Mobile Safari',
-    //   use: {
-    //     ...devices['iPhone 12'],
-    //   },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: {
-    //     channel: 'msedge',
-    //   },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: {
-    //     channel: 'chrome',
-    //   },
+    //   name: 'mobile-safari',
+    //   use: { ...devices['iPhone 14'] },
     // },
   ],
-
-  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-  // outputDir: 'test-results/',
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   port: 3000,
-  // },
-};
-
-module.exports = config;
+  outputDir: 'test-results/',
+});
