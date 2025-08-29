@@ -61,7 +61,6 @@ export default defineConfig({
       name: 'API',
       testMatch: /api\/(.*)\.spec\.ts/,
       use: {
-        baseURL: 'https://jsonplaceholder.typicode.com',
         extraHTTPHeaders: {
           'Content-Type': 'application/json',
         },
