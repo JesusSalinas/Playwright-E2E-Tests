@@ -19,6 +19,8 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps
       - name: Run Playwright tests
+        env:
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
         run: npx playwright test --grep @ci_gh
       - uses: actions/upload-artifact@v4
         if: always()
